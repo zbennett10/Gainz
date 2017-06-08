@@ -1,17 +1,24 @@
 module App exposing (..)
 
-import Html exposing (Html, div, text, h1, p, button)
-import Html.Attributes exposing (class)
-import Html.Events exposing (onClick)
+import Http
+import Json.Decode as Decode
+import Html exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+
+import Types exposing (Exercise)
 
 
 type alias Model =
-    Int
+    { exercises : List Exercise
+    , currentExercise : Exercise
+    }
+
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( 0, Cmd.none )
+    ( initialModel, Cmd.none )
 
 
 
@@ -19,14 +26,14 @@ init =
 
 
 type Msg
-    = Inc
+    = PostExercise Exercise
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        Inc ->
-            (model + 1) ! []
+        PostExercise currentExercise ->
+            ( model, Cmd.none )
 
 
 
@@ -36,12 +43,28 @@ update message model =
 view : Model -> Html Msg
 view model =
     div [ class "container" ]
-        [ h1 [] [ text "Hot loading" ]
-        , p [] [ text "Click on the button below to increment the state. Then make a change to the source code and see how the state is retained after you recompile." ]
+        [ h1 [] [ text "Gainz" ]
         , p [] [ text <| toString model ]
         , button
             [ class "btn btn-primary"
-            , onClick Inc
+            , onClick PostExercise model.currentExercise3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             ]
             [ text "+ 1" ]
         ]
