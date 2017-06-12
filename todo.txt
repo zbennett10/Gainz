@@ -1,0 +1,9 @@
+add ability to send POST request to backend server
+ - encode current exercise
+ - send http request
+
+add abilit to send GET request to backend server
+ - send http request
+ - decode exercise array
+
+ 
