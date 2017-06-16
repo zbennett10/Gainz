@@ -39,7 +39,7 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update message model =
     case message of
-        PostExercise currentExercise ->
+        PostExercise ->
             ( model, Cmd.none )
         
         StageMuscleGroup selection ->
