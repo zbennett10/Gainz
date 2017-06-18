@@ -12,14 +12,12 @@ import Types exposing (Exercise)
 type alias Model =
     { exercises : List Exercise
     , currentExercise : Exercise
-    , stagedMuscleGroups : List String
     }
 
 initialModel : Model
 initialModel =
     { exercises = [ Exercise "Bicep Curl" 12 4 "2017-06-11T:00:00:00Z" ["Biceps"] ]
     , currentExercise = Exercise "Skullcrushers" 12 4 "2017-06-11T:00:00:00Z" ["Triceps"] 
-    , stagedMuscleGroups = [" "]
     }
 
 init : ( Model, Cmd Msg )
@@ -42,8 +40,8 @@ update message model =
         PostExercise ->
             ( model, Cmd.none )
         
-        StageMuscleGroup selection ->
-            ( { model | stagedMuscleGroups = (addMuscleGroupToModel model.stagedMuscleGroups selection) }, Cmd.none )
+        StageMuscleGroup muscle ->
+            ( { model | currentExercise = (stageMuscleGroup model.currentExercise muscle)}, Cmd.none )
 
 
 
@@ -85,7 +83,7 @@ view model =
                     , option [] [ text "Chest" ]
                     , option [] [ text "Back" ]
                     ]
-                , textarea [] [ text (showStagedMuscleGroups model) ]
+                , textarea [] [ text (showStagedMuscleGroups model.currentExercise) ]
                 ]
             , button [ class "btn btn-lg btn-success"
                      , onClick PostExercise
@@ -98,11 +96,10 @@ view model =
 
 -- helpers
 
+stageMuscleGroup : Exercise -> String -> Exercise
+stageMuscleGroup exercise muscle =
+    { exercise | muscles = muscle :: exercise.muscles }
 
-addMuscleGroupToModel : List String -> String -> List String
-addMuscleGroupToModel muscles newGroup =
-    newGroup :: muscles
-
-showStagedMuscleGroups : Model -> String
-showStagedMuscleGroups model =
-    String.join "," model.stagedMuscleGroups
+showStagedMuscleGroups : Exercise -> String
+showStagedMuscleGroups exercise =
+    String.join "," exercise.muscles
