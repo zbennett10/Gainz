@@ -8,30 +8,52 @@ import Html.Events exposing (..)
 
 import Types exposing (Exercise)
 
+api : String
+api =
+    "http://localhost:3030/exercise-names"
 
 type alias Model =
     { exercises : List Exercise
     , currentExercise : Exercise
+    , exerciseNames : String
     }
 
 initialModel : Model
 initialModel =
     { exercises = [ Exercise "Bicep Curl" 12 4 "2017-06-11T:00:00:00Z" ["Biceps"] ]
     , currentExercise = Exercise "Skullcrushers" 12 4 "2017-06-11T:00:00:00Z" ["Triceps"] 
+    , exerciseNames = ""
     }
 
 init : ( Model, Cmd Msg )
 init =
-    ( initialModel, Cmd.none )
+    ( initialModel, fetchExerciseNamesCmd )
 
 
 
 -- UPDATE
+fetchExerciseNames : Http.Request String
+fetchExerciseNames =
+    Http.getString api
+
+fetchExerciseNamesCmd : Cmd Msg
+fetchExerciseNamesCmd =
+    Http.send FetchExerciseNamesCompleted fetchExerciseNames
+
+fetchExerciseNamesCompleted : Model -> Result Http.Error String -> ( Model, Cmd Msg )
+fetchExerciseNamesCompleted model result =
+    case result of
+        Ok nameList ->
+            ( { model | exerciseNames = nameList }, Cmd.none )
+        
+        Err _ ->
+            ( model, Cmd.none )
 
 
 type Msg
     = PostExercise
     | StageMuscleGroup String
+    | FetchExerciseNamesCompleted ( Result Http.Error String )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -42,6 +64,9 @@ update message model =
         
         StageMuscleGroup muscle ->
             ( { model | currentExercise = (stageMuscleGroup model.currentExercise muscle)}, Cmd.none )
+        
+        FetchExerciseNamesCompleted result ->
+            fetchExerciseNamesCompleted model result
 
 
 
